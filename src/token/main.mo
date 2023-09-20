@@ -32,7 +32,8 @@ actor Token {
     };
 
     public shared(msg) func payOut(): async Text{ // here msg is the principal id of the entity who will call this shared functions from their actors
-        
+        Debug.print(debug_show(msg.caller));
+
         if(balances.get(msg.caller) == null){
             let amount = 2500;
             balances.put(msg.caller,amount);
@@ -43,5 +44,31 @@ actor Token {
             return "JUGAAR PE JUGAAR. You have already claimed JUG";
         }
         
+    };
+
+    public shared(msg) func transfer(to: Principal, amount: Nat) : async Text{
+
+        let sender : Principal = msg.caller;
+        let receiver: Principal = to;
+
+        let senderBal : Nat = await balanceOf(sender);
+        let receiverBal : Nat = await balanceOf(receiver);
+
+        let diff : Nat = senderBal - amount;
+
+
+        if(sender==receiver){
+            return "Nice Try to Jugaar. Cant send JUGS to yourself";
+        }else if(diff>=0){
+            balances.put(sender, senderBal - amount);
+            balances.put(receiver, receiverBal + amount);
+            return "JUGAAR done";
+        }
+        else{
+            return "JUGAAR Failed. Not enough JUGS";
+        }
+
+        
+
     };
 };

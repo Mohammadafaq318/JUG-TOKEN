@@ -5,7 +5,7 @@ function Faucet() {
 
 
   const [isDisable, setDisable] = useState(false);
-  const [buttonText,setButtonText] = useState("JUGAAR Me Some Token");
+  const [buttonText,setButtonText] = useState("Create Wallet and JUGAAR Me Some Token");
 
   async function handleClick(event) {
     setDisable(true);
@@ -22,7 +22,7 @@ function Faucet() {
         </span>
         Faucet
       </h2>
-      <label>Get your free JUGAAR tokens here! Claim 2,500 JUG coins to your account.</label>
+      <label>Setup Account and get your free JUGAAR tokens here! Claim 2,500 JUG coins to your account.</label>
       <p className="trade-buttons">
         <button id="btn-payout" onClick={handleClick} disabled={isDisable}>
           {buttonText}
