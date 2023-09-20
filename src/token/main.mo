@@ -36,9 +36,7 @@ actor Token {
 
         if(balances.get(msg.caller) == null){
             let amount = 2500;
-            balances.put(msg.caller,amount);
-            let ownerBal : Nat = await balanceOf(owner);
-            balances.put(owner, ownerBal - amount);
+            let result = await transfer(msg.caller,amount);
             return "JUGAAR works. JUG has been deposited";
         }else {
             return "JUGAAR PE JUGAAR. You have already claimed JUG";
@@ -52,7 +50,7 @@ actor Token {
         let receiver: Principal = to;
 
         let senderBal : Nat = await balanceOf(sender);
-        let receiverBal : Nat = await balanceOf(receiver);
+        
 
         let diff : Nat = senderBal - amount;
 
@@ -60,6 +58,7 @@ actor Token {
         if(sender==receiver){
             return "Nice Try to Jugaar. Cant send JUGS to yourself";
         }else if(diff>=0){
+            let receiverBal : Nat = await balanceOf(receiver);
             balances.put(sender, senderBal - amount);
             balances.put(receiver, receiverBal + amount);
             return "JUGAAR done";
