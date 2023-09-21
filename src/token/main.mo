@@ -4,19 +4,21 @@ import Prelude "mo:base/Prelude";
 import Text "mo:base/Text";
 import Debug "mo:base/Debug";
 import Nat "mo:base/Nat";
-
+import Iter "mo:base/Iter";
 
 actor Token {
 
-    var owner : Principal = Principal.fromText("vjqvg-opd27-dxyi2-576oz-fhdqe-jfg4b-7zt2q-ae4yr-65tcw-f2cti-bae");  
-    var totalSupply : Nat = 231400000; //231.4 Million
-    var symbol : Text = "JUG";
+    Debug.print(debug_show("hello"));
+    let owner : Principal = Principal.fromText("vjqvg-opd27-dxyi2-576oz-fhdqe-jfg4b-7zt2q-ae4yr-65tcw-f2cti-bae");  
+    let totalSupply : Nat = 231400000; //231.4 Million
+    let symbol : Text = "JUG";
 
-    var balances = HashMap.HashMap<Principal,Nat>(1,Principal.equal, Principal.hash); //Our ledger to keep track of balances
+    private stable var balanceEntries: [(Principal,Nat)]=[];
+    private var balances = HashMap.HashMap<Principal,Nat>(1,Principal.equal, Principal.hash); //Our ledger to keep track of balances //Private means it cna only be modified from the token actor
 
-    balances.put(owner,totalSupply);
-
-
+    if(balances.size()==0){
+        balances.put(owner,totalSupply);
+    };
     public query func balanceOf(who: Principal): async Nat{
         
         let balance : Nat = switch (balances.get(who)){
@@ -66,8 +68,16 @@ actor Token {
         else{
             return "JUGAAR Failed. Not enough JUGS";
         }
+    };
 
-        
+    system func preupgrade(){ //trigerred before the upgrade dfx deploy
+        balanceEntries:= Iter.toArray(balances.entries());
+    };
+    system func postupgrade(){ //trigerred after the upgrade dfx deploy
+        balances:= HashMap.fromIter<Principal,Nat>(balanceEntries.vals(),1,Principal.equal, Principal.hash); //putting values back into the balances hashmap
 
+        if(balances.size()==0){
+            balances.put(owner,totalSupply);
+        };
     };
 };
